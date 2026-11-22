@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f172a">
+<title>급여명세서</title>
+<style>
+  :root {
+    --dark-navy: #0f172a;
+    --dark-slate: #1e293b;
+    --emerald: #10b981;
+    --emerald-dark: #059669;
+    --amber: #f59e0b;
+    --amber-bg: #fffbeb;
+    --blue: #2563eb;
+    --rose: #e11d48;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #0f172a;
+    --sub: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  body { margin: 0; padding: 0 0 84px 0; background: var(--bg); color: var(--text); font-size: 13.5px; }
+
+  header {
+    background: var(--dark-navy);
+    color: #fff;
+    padding: 14px 16px 16px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.18);
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  .brand-left { display: flex; align-items: center; gap: 10px; }
+  .brand-badge {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--emerald);
+    color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;
+  }
+  .brand-title { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .brand-tag {
+    font-size: 10px; background: rgba(16,185,129,0.2); color: #34d399;
+    padding: 2px 6px; border-radius: 5px; font-weight: 700;
+  }
+  .brand-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .install-btn {
+    background: var(--emerald); color: #fff; border: none; border-radius: 10px;
+    padding: 7px 11px; font-size: 11.5px; font-weight: 800; cursor: pointer;
+  }
+
+  .cycle-bar {
+    margin-top: 12px; background: var(--dark-slate); border-radius: 12px; padding: 8px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cycle-nav-btn {
+    width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1);
+    color: #fff; border: none; font-size: 12px; font-weight: 800; cursor: pointer;
+  }
+  .cycle-info { text-align: center; }
+  .cycle-info strong { display: block; font-size: 13.5px; font-weight: 800; }
+  .cycle-info small { font-size: 11px; color: #94a3b8; }
+
+  .container { padding: 12px; max-width: 640px; margin: 0 auto; }
+  .card {
+    background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.04); border: 1px solid var(--border);
+  }
+
+  .dual-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .box-cash {
+    background: var(--emerald-dark); color: #fff; border-radius: 12px; padding: 12px;
+  }
+  .box-cash small { display: block; font-size: 10.5px; opacity: 0.9; font-weight: 700; }
+  .box-cash strong { display: block; font-size: 19px; font-weight: 900; margin: 4px 0; letter-spacing: -0.5px; }
+  .box-cash span { font-size: 10px; opacity: 0.85; }
+
+  .box-voucher {
+    background: var(--amber-bg); border: 1px solid #fde68a; color: #92400e; border-radius: 12px; padding: 12px;
+  }
+  .box-voucher small { display: block; font-size: 10.5px; font-weight: 700; color: #b45309; }
+  .box-voucher strong { display: block; font-size: 19px; font-weight: 900; margin: 4px 0; color: #d97706; letter-spacing: -0.5px; }
+  .box-voucher span { font-size: 10px; color: #b45309; }
+
+  .gross-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px;
+  }
+  .gross-row button {
+    background: none; border: none; color: var(--blue); font-weight: 800; font-size: 12px; cursor: pointer; padding: 0;
+  }
+
+  .clock-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .clock-status-txt { font-size: 11.5px; font-weight: 800; color: var(--emerald-dark); }
+  .clock-today-txt { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .live-clock-display {
+    font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums;
+    color: var(--dark-navy); letter-spacing: -0.5px; line-height: 1;
+  }
+  .clock-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-clock-in {
+    background: var(--dark-navy); color: #fff; border: none; border-radius: 12px;
+    padding: 11px 8px; text-align: center; cursor: pointer;
+  }
+  .btn-clock-out {
+    background: var(--emerald-dark); color: #fff; border: none; border-radius: 12px;
+    padding: 11px 8px; text-align: center; cursor: pointer;
+  }
+  .btn-clock-in strong, .btn-clock-out strong { display: block; font-size: 13.5px; font-weight: 800; }
+  .btn-clock-in small, .btn-clock-out small { display: block; font-size: 10px; opacity: 0.85; margin-top: 2px; }
+
+  .date-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 6px 8px; margin-bottom: 8px;
+  }
+  .date-bar button {
+    background: #fff; border: 1px solid var(--border); border-radius: 7px;
+    padding: 5px 10px; font-size: 11.5px; font-weight: 700; color: var(--text); cursor: pointer;
+  }
+  .date-select-mid {
+    font-size: 13.5px; font-weight: 800; color: var(--dark-navy); border: none; background: transparent; text-align: center;
+  }
+  .night-strip {
+    background: #eff6ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 7px 10px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; margin-bottom: 10px;
+  }
+  .night-strip strong { color: var(--blue); }
+
+  .sec-label {
+    font-size: 11.5px; font-weight: 800; color: #475569; margin: 10px 0 6px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .shift-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+  .shift-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+  .s-btn {
+    border: 1.5px solid #cbd5e1; background: #fff; border-radius: 10px;
+    padding: 8px 4px; text-align: center; cursor: pointer;
+  }
+  .s-btn strong { display: block; font-size: 12px; font-weight: 800; }
+  .s-btn small { display: block; font-size: 9.5px; color: var(--sub); margin-top: 2px; }
+  .s-btn.active-dark { background: var(--dark-slate); border-color: var(--dark-slate); color: #fff; }
+  .s-btn.active-dark small { color: #cbd5e1; }
+  .s-btn.pink-tint { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+  .s-btn.active-rose { background: var(--rose); border-color: var(--rose); color: #fff; }
+  .s-btn.active-rose small { color: #ffe4e6; }
+  .s-btn.mint-tint { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+
+  .adj-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+    padding: 7px 10px; margin-bottom: 6px;
+  }
+  .adj-row.voucher-row { background: var(--amber-bg); border-color: #fde68a; }
+  .adj-lbl { font-size: 12.5px; font-weight: 800; }
+  .adj-lbl span { color: var(--blue); margin-left: 4px; }
+  .adj-row.voucher-row .adj-lbl span { color: #d97706; }
+  .adj-grp { display: flex; gap: 4px; }
+  .pill-btn {
+    border: none; border-radius: 7px; padding: 5px 8px; font-size: 11px; font-weight: 800; cursor: pointer;
+  }
+  .p-blue { background: var(--blue); color: #fff; }
+  .p-rose { background: var(--rose); color: #fff; }
+  .p-green { background: var(--emerald-dark); color: #fff; }
+  .p-amber { background: #f59e0b; color: #fff; }
+  .p-sub { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+
+  .grid-6 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .stat-box {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 9px 10px;
+  }
+  .stat-top { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--sub); font-weight: 700; }
+  .stat-bot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px; }
+  .stat-bot strong { font-size: 13px; font-weight: 900; color: var(--text); }
+  .stat-bot span { font-size: 12px; font-weight: 800; color: var(--blue); }
+  .stat-bot span.red { color: var(--rose); }
+  .stat-bot span.green { color: var(--emerald-dark); }
+  .stat-bot span.amber { color: #d97706; }
+
+  .day-card-item {
+    border: 1px solid var(--border); border-radius: 11px; padding: 10px 12px; margin-bottom: 6px; background: #fff;
+  }
+  .day-card-item.selected { border: 2px solid var(--blue); background: #eff6ff; }
+  .dc-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 800; }
+  .dc-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .mini-tag { font-size: 10.5px; padding: 2px 6px; border-radius: 5px; font-weight: 700; background: #e2e8f0; color: #334155; }
+  .mini-tag.b { background: #dbeafe; color: #1e40af; }
+  .mini-tag.g { background: #dcfce7; color: #166534; }
+  .mini-tag.a { background: #fef3c7; color: #92400e; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid #94a3b8; border-radius: 8px; }
+  table.detail-sheet { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 680px; background: #fff; }
+  table.detail-sheet th, table.detail-sheet td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; white-space: nowrap; }
+  table.detail-sheet thead th { background: var(--dark-navy); color: #fff; font-weight: 700; }
+  table.detail-sheet thead tr.sub-th th { background: #e2e8f0; color: #1e293b; font-size: 10.5px; }
+  table.detail-sheet tr.sun td:first-child { color: #dc2626; font-weight: 800; }
+  table.detail-sheet tr.sat td:first-child { color: #2563eb; font-weight: 800; }
+  table.detail-sheet tfoot td { background: #eff6ff; font-weight: 800; color: #1e3a8a; border-top: 2px solid #1e3a8a; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 90;
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-box {
+    background: #fff; width: 100%; max-width: 600px; border-radius: 18px 18px 0 0;
+    padding: 16px; max-height: 88vh; overflow-y: auto;
+  }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .modal-field label { display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 3px; }
+  .modal-field input, .modal-field select {
+    width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;
+  }
+
+  .tab-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+    border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 6px 8px; gap: 6px; z-index: 60;
+  }
+  .tab-btn {
+    background: none; border: none; color: var(--sub); font-size: 11px; font-weight: 800;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; border-radius: 10px; cursor: pointer;
+  }
+  .tab-btn.active { background: var(--dark-navy); color: #fff; }
+  .tab-icon { font-size: 16px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .pay-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13.5px; }
+  .pay-row.total { border-top: 2px solid var(--dark-navy); border-bottom: none; font-size: 16px; font-weight: 900; color: var(--emerald-dark); padding-top: 12px; }
+  input[type="number"], input[type="text"], textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px;
+  }
+  .toast {
+    position: fixed; bottom: 82px; left: 50%; transform: translateX(-50%);
+    background: rgba(15,23,42,0.94); color: #fff; padding: 9px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; z-index: 100; display: none; white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand-left">
+      <div class="brand-badge">급여</div>
+      <div>
+        <div class="brand-title">급여명세서 <span class="brand-tag">A직군 시급</span></div>
+        <div class="brand-sub">마감 기준: 전월 18일 ~ 당월 17일</div>
+      </div>
+    </div>
+    <button class="install-btn" onclick="switchTab('settings', document.querySelectorAll('.tab-btn')[3])">📲 앱 설치</button>
+  </div>
+
+  <div class="cycle-bar">
+    <button class="cycle-nav-btn" onclick="stepCycle(-1)">◀</button>
+    <div class="cycle-info">
+      <strong id="cycleTitle">2026년 12월 급여분</strong>
+      <small id="cycleRange">2026/11/18 ~ 2026/12/17 (30일)</small>
+    </div>
+    <button class="cycle-nav-btn" onclick="stepCycle(1)">▶</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="view-home" class="view">
+    <div class="card">
+      <div class="dual-summary">
+        <div class="box-cash">
+          <small>💳 실제 통장 입금액 (현금)</small>
+          <strong id="topNetCash">2,080,010원</strong>
+          <span>세금·4대보험·상품권 공제 후</span>
+        </div>
+        <div class="box-voucher">
+          <small>🎟 별도 수령 상품권</small>
+          <strong id="topVoucher">0원</strong>
+          <span id="topVoucherCount">직접 추가 합계 (0매)</span>
+        </div>
+      </div>
+      <div class="gross-row">
+        <span>세전 총급여 <strong id="topGrossPay">2,925,010원</strong></span>
+        <button onclick="switchTab('payslip', document.querySelectorAll('.tab-btn')[2])">명세서 상세 ›</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="clock-header">
+        <div>
+          <div class="clock-status-txt" id="clockStatus" style="color: rgb(5, 150, 105);">● 실시간 출퇴근 대기중</div>
+          <div class="clock-today-txt" id="todayLiveDate">2026년 11월 23일 (월요일)</div>
+        </div>
+        <div class="live-clock-display" id="liveClockDisplay">04:22:27</div>
+      </div>
+      <div class="clock-btns">
+        <button class="btn-clock-in" onclick="clockIn()">
+          <strong>🟢 출근 찍기</strong>
+          <small>오늘 날짜 출근 기록</small>
+        </button>
+        <button class="btn-clock-out" onclick="clockOut()">
+          <strong>🔴 퇴근 찍기</strong>
+          <small>기본·야간·연장 자동반영</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="date-bar">
+        <button onclick="moveDate(-1)">◀ 이전일</button>
+        <select id="dateDropdown" class="date-select-mid" onchange="selectDate(this.value)"><option value="2026-11-18">📅 11-18 (수)</option><option value="2026-11-19">📅 11-19 (목)</option><option value="2026-11-20">📅 11-20 (금)</option><option value="2026-11-21">📅 11-21 (토)</option><option value="2026-11-22">📅 11-22 (일)</option><option value="2026-11-23">📅 11-23 (월)</option><option value="2026-11-24">📅 11-24 (화)</option><option value="2026-11-25">📅 11-25 (수)</option><option value="2026-11-26">📅 11-26 (목)</option><option value="2026-11-27">📅 11-27 (금)</option><option value="2026-11-28">📅 11-28 (토)</option><option value="2026-11-29">📅 11-29 (일)</option><option value="2026-11-30">📅 11-30 (월)</option><option value="2026-12-01">📅 12-01 (화)</option><option value="2026-12-02">📅 12-02 (수)</option><option value="2026-12-03">📅 12-03 (목)</option><option value="2026-12-04">📅 12-04 (금)</option><option value="2026-12-05">📅 12-05 (토)</option><option value="2026-12-06">📅 12-06 (일)</option><option value="2026-12-07">📅 12-07 (월)</option><option value="2026-12-08">📅 12-08 (화)</option><option value="2026-12-09">📅 12-09 (수)</option><option value="2026-12-10">📅 12-10 (목)</option><option value="2026-12-11">📅 12-11 (금)</option><option value="2026-12-12">📅 12-12 (토)</option><option value="2026-12-13">📅 12-13 (일)</option><option value="2026-12-14">📅 12-14 (월)</option><option value="2026-12-15">📅 12-15 (화)</option><option value="2026-12-16">📅 12-16 (수)</option><option value="2026-12-17">📅 12-17 (목)</option></select>
+        <button onclick="moveDate(1)">다음일 ▶</button>
+      </div>
+
+      <div class="night-strip">
+        <span>🌙 야간수당: <strong id="selectedNightInfo">0h (0원)</strong></span>
+        <span id="selectedShiftBadge" style="color:#64748b;font-weight:700;">미입력</span>
+      </div>
+
+      <div class="sec-label">
+        <span>⚡ 시프트 원터치 입력 (터치 즉시 기록·다음날 이동)</span>
+        <span onclick="clearDay()" style="color:#e11d48;cursor:pointer;">🗑 비우기</span>
+      </div>
+
+      <div class="shift-row-3">
+        <button class="s-btn" id="btn-shift-주간 8h" onclick="applyShift('주간 8h','07:00','15:30',8,0,0)">
+          <strong>🌅 주간 8h</strong>
+          <small>07:00~15:30</small>
+        </button>
+        <button class="s-btn" id="btn-shift-오후 8h" onclick="applyShift('오후 8h','15:00','23:30',8,1.5,0)">
+          <strong>🌇 오후 8h</strong>
+          <small>15:00~23:30</small>
+        </button>
+        <button class="s-btn" id="btn-shift-야간 8h" onclick="applyShift('야간 8h','23:00','07:30',8,7,0)">
+          <strong>🌙 야간 8h</strong>
+          <small>23:00~07:30</small>
+        </button>
+      </div>
+
+      <div class="shift-row-4">
+        <button class="s-btn pink-tint" id="btn-shift-주간특근 8h" onclick="applyShift('주간특근 8h','07:00','15:30',0,0,8)">
+          <strong>🏙 주간특근</strong>
+          <small>07:00~15:30</small>
+        </button>
+        <button class="s-btn pink-tint" id="btn-shift-야간특근 8h" onclick="applyShift('야간특근 8h','23:00','07:30',0,7,8)">
+          <strong>🌃 야간특근</strong>
+          <small>23:00~07:30</small>
+        </button>
+        <button class="s-btn mint-tint" id="btn-shift-연차/대휴" onclick="applyShift('연차/대휴','-','-',8,0,0)">
+          <strong>🏖 연차/대휴</strong>
+          <small>유급휴무</small>
+        </button>
+        <button class="s-btn" id="btn-shift-휴무" onclick="applyShift('휴무','-','-',0,0,0)">
+          <strong>🛌 휴무</strong>
+          <small>0h 휴식일</small>
+        </button>
+      </div>
+
+      <div class="sec-label">
+        <span>➕ 선택일 추가 수당 &amp; 상품권 (조출·잔업 시 시각 자동변동)</span>
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-lbl">1. 조출 <span id="val-early">0h</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-blue" onclick="adjustField('early',1)">+1h</button>
+          <button class="pill-btn p-sub" onclick="adjustField('early',0.5)">+30m</button>
+          <button class="pill-btn p-sub" onclick="adjustField('early',-0.5)">-30m</button>
+        </div>
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-lbl">2. 잔업 <span id="val-overtime">0h</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-blue" onclick="adjustField('overtime',1)">+1h</button>
+          <button class="pill-btn p-sub" onclick="adjustField('overtime',0.5)">+30m</button>
+          <button class="pill-btn p-sub" onclick="adjustField('overtime',-0.5)">-30m</button>
+        </div>
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-lbl">3. 야간 <span id="val-night">0h (0원)</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-blue" onclick="adjustField('night',1)">+1h</button>
+          <button class="pill-btn p-sub" onclick="adjustField('night',0.5)">+30m</button>
+          <button class="pill-btn p-sub" onclick="adjustField('night',-0.5)">-30m</button>
+        </div>
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-lbl">4. 휴연 <span id="val-holiday" style="color:#e11d48;">0h</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-rose" onclick="adjustField('holiday',1)">+1h</button>
+          <button class="pill-btn p-sub" onclick="adjustField('holiday',0.5)">+30m</button>
+          <button class="pill-btn p-sub" onclick="adjustField('holiday',-0.5)">-30m</button>
+        </div>
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-lbl">5. 특별근로 <span id="val-special" style="color:#059669;">0h (0원)</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-green" onclick="adjustField('special',1)">+1h</button>
+          <button class="pill-btn p-sub" onclick="adjustField('special',0.5)">+30m</button>
+          <button class="pill-btn p-sub" onclick="adjustField('special',-0.5)">-30m</button>
+        </div>
+      </div>
+
+      <div class="adj-row voucher-row">
+        <div class="adj-lbl">6. 상품권 <span id="val-voucher">0원 (일 50,000원)</span></div>
+        <div class="adj-grp">
+          <button class="pill-btn p-amber" onclick="adjustVoucher(50000)">+5만원</button>
+          <button class="pill-btn p-sub" onclick="adjustVoucher(100000)">+10만원</button>
+          <button class="pill-btn p-sub" onclick="adjustVoucher(-50000)">-5만원</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;">
+        <span>📊 월간 6단 항목별 합계 현황</span>
+        <span id="fixedPayLabel" style="font-weight:700;color:#64748b;">고정급 2,925,010원</span>
+      </div>
+      <div class="grid-6">
+        <div class="stat-box">
+          <div class="stat-top"><span>1. 조출·잔업 연장</span><span>1.5x</span></div>
+          <div class="stat-bot"><strong id="st-ext-h">0h (조0+잔0)</strong><span id="st-ext-p">0원</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><span>2. 심야수당 (22~06)</span><span>0.5x</span></div>
+          <div class="stat-bot"><strong id="st-ngt-h">0h</strong><span id="st-ngt-p">0원</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><span>3. 휴일특근 (휴근·휴연)</span><span>1.5/2x</span></div>
+          <div class="stat-bot"><strong id="st-hol-h">0h</strong><span class="red" id="st-hol-p">0원</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><span>4. 특별근로</span><span>만원올림</span></div>
+          <div class="stat-bot"><strong id="st-spc-h">0h</strong><span class="green" id="st-spc-p">0원</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><span>5. 고정급여</span><span>기본+상여+직책</span></div>
+          <div class="stat-bot"><strong id="st-base-h">정상 0h</strong><span id="st-base-p" style="color:#0f172a;">2,925,010원</span></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><span>6. 상품권 (직접추가)</span><span>과세포함</span></div>
+          <div class="stat-bot"><strong id="st-vch-c">0장</strong><span class="amber" id="st-vch-p">0원</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;">
+        <span>📅 일자별 근무 리스트 (터치 시 선택·수정)</span>
+        <span style="color:#2563eb;">파란 테두리 = 선택일</span>
+      </div>
+      <div id="dayList" style="max-height:360px;overflow-y:auto;"><div class="day-card-item selected" onclick="selectDate('2026-11-18')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-18(수)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-19')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-19(목)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-20')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-20(금)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-21')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#2563eb">11-21(토)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-22')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#e11d48">11-22(일)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-23')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-23(월)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-24')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-24(화)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-25')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-25(수)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-26')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-26(목)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-27')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-27(금)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-28')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#2563eb">11-28(토)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-29')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#e11d48">11-29(일)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-11-30')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">11-30(월)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-01')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-01(화)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-02')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-02(수)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-03')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-03(목)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-04')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-04(금)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-05')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#2563eb">12-05(토)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-06')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#e11d48">12-06(일)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-07')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-07(월)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-08')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-08(화)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-09')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-09(수)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-10')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-10(목)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-11')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-11(금)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-12')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#2563eb">12-12(토)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-13')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#e11d48">12-13(일)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-14')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-14(월)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-15')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-15(화)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-16')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-16(수)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div><div class="day-card-item " onclick="selectDate('2026-12-17')">
+      <div class="dc-top">
+        <div>
+          <span style="color:#0f172a">12-17(목)</span>
+          
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;"></span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">-</span>
+      </div>
+      
+    </div></div>
+    </div>
+  </div>
+
+  <div id="view-table" class="view">
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;">
+        <span>📋 상세 출퇴근 시간표 (행 터치 시 직접 수정)</span>
+        <button class="pill-btn p-blue" onclick="exportCSV()">📥 엑셀(CSV)</button>
+      </div>
+      <div class="table-wrap">
+        <table class="detail-sheet">
+          <thead>
+            <tr>
+              <th rowspan="2">일자(요일)</th>
+              <th rowspan="2">근무구분</th>
+              <th colspan="2">출퇴근 시각</th>
+              <th colspan="5">근로시간 상세 (단위: 시간)</th>
+              <th rowspan="2">일 수당계</th>
+              <th rowspan="2">상품권</th>
+              <th rowspan="2">비고</th>
+            </tr>
+            <tr class="sub-th">
+              <th>출근</th>
+              <th>퇴근</th>
+              <th>기본</th>
+              <th>조출</th>
+              <th>잔업</th>
+              <th>야간</th>
+              <th>특근/특별</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"><tr class="" onclick="openEditModal('2026-11-18')">
+      <td>11-18(수)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-19')">
+      <td>11-19(목)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-20')">
+      <td>11-20(금)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sat" onclick="openEditModal('2026-11-21')">
+      <td>11-21(토)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sun" onclick="openEditModal('2026-11-22')">
+      <td>11-22(일)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-23')">
+      <td>11-23(월)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-24')">
+      <td>11-24(화)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-25')">
+      <td>11-25(수)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-26')">
+      <td>11-26(목)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-27')">
+      <td>11-27(금)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sat" onclick="openEditModal('2026-11-28')">
+      <td>11-28(토)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sun" onclick="openEditModal('2026-11-29')">
+      <td>11-29(일)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-11-30')">
+      <td>11-30(월)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-01')">
+      <td>12-01(화)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-02')">
+      <td>12-02(수)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-03')">
+      <td>12-03(목)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-04')">
+      <td>12-04(금)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sat" onclick="openEditModal('2026-12-05')">
+      <td>12-05(토)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sun" onclick="openEditModal('2026-12-06')">
+      <td>12-06(일)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-07')">
+      <td>12-07(월)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-08')">
+      <td>12-08(화)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-09')">
+      <td>12-09(수)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-10')">
+      <td>12-10(목)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-11')">
+      <td>12-11(금)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sat" onclick="openEditModal('2026-12-12')">
+      <td>12-12(토)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="sun" onclick="openEditModal('2026-12-13')">
+      <td>12-13(일)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-14')">
+      <td>12-14(월)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-15')">
+      <td>12-15(화)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-16')">
+      <td>12-16(수)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr><tr class="" onclick="openEditModal('2026-12-17')">
+      <td>12-17(목)</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">-</td>
+      <td style="color:#d97706;font-weight:700;">-</td>
+      <td style="color:#64748b;font-size:10px;"></td>
+    </tr></tbody>
+          <tfoot id="tableFoot">
+    <tr>
+      <td colspan="2">합계 (0일)</td>
+      <td colspan="2">-</td>
+      <td>0h</td>
+      <td>0h</td>
+      <td>0h</td>
+      <td>0h</td>
+      <td>특0/별0</td>
+      <td style="text-align:right;">0원</td>
+      <td>0만</td>
+      <td>-</td>
+    </tr>
+  </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-payslip" class="view">
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;">
+        <span>🧾 급여명세서 상세 정산</span>
+        <button class="pill-btn p-blue" onclick="copyKakaoSummary()">📋 카톡 요약 복사</button>
+      </div>
+      <div id="payslipDetail">
+    <div class="pay-row"><span>기본급 + 정기상여</span><strong>2,825,010원</strong></div>
+    <div class="pay-row"><span>직책수당</span><strong>100,000원</strong></div>
+    <div class="pay-row"><span>조출·잔업수당 (0h)</span><strong>0원</strong></div>
+    <div class="pay-row"><span>야간근로수당 (0h)</span><strong>0원</strong></div>
+    <div class="pay-row"><span>휴일·특근수당 (0h)</span><strong>0원</strong></div>
+    <div class="pay-row"><span>특별근로수당 (0h · 만원올림)</span><strong>0원</strong></div>
+    <div class="pay-row"><span>상품권 지급액 (과세포함)</span><strong>0원</strong></div>
+    <div class="pay-row" style="background:#f8fafc;padding:8px;border-radius:6px;"><span>세전 지급 총액</span><strong>2,925,010원</strong></div>
+    <div class="pay-row" style="color:#e11d48;"><span>(-) 4대보험 고정공제</span><strong>-525,000원</strong></div>
+    <div class="pay-row" style="color:#e11d48;"><span>(-) 소득세·지방세 (예상)</span><strong>-320,000원</strong></div>
+    <div class="pay-row" style="color:#d97706;"><span>(-) 상품권 공제 (별도 현장수령)</span><strong>-0원</strong></div>
+    <div class="pay-row total"><span>실제 통장 입금액</span><span>2,080,010원</span></div>
+  </div>
+    </div>
+  </div>
+
+  <div id="view-settings" class="view active">
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;"><span>📲 카톡 공유 및 앱 설치</span></div>
+      <p style="font-size:12px;color:#475569;margin-top:0;line-height:1.5;">
+        이 화면 자체를 파일로 내려받아 카톡에 올리면 동료분들도 바로 실행할 수 있습니다.
+      </p>
+      <button class="pill-btn p-green" style="width:100%;padding:12px;font-size:13.5px;" onclick="downloadSelfHTML()">💾 카톡 전송용 앱 파일 저장 (급여명세서.html)</button>
+    </div>
+
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;"><span>⚙️ 급여 기준 설정</span></div>
+      <div style="display:grid;gap:8px;">
+        <label>기본급 + 정기상여 (원)<input type="number" id="cfgBase" onchange="saveConfig()"></label>
+        <label>직책수당 (원)<input type="number" id="cfgPos" onchange="saveConfig()"></label>
+        <label>통상시급 (원)<input type="number" id="cfgHourly" onchange="saveConfig()"></label>
+        <label>고정 4대보험 공제액 (원)<input type="number" id="cfgIns" onchange="saveConfig()"></label>
+        <label>예상 소득세·지방세 (원)<input type="number" id="cfgTax" onchange="saveConfig()"></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-label" style="margin-top:0;"><span>🔄 데이터 백업 및 공유 코드</span></div>
+      <textarea id="shareCodeBox" rows="3" readonly=""></textarea>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button class="pill-btn p-blue" onclick="copyShareCode()">📋 공유 코드 복사</button>
+        <button class="pill-btn p-sub" onclick="importShareCode()">📥 코드 불러오기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="editModal" class="modal-backdrop" onclick="if(event.target===this) closeEditModal()">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">
+      <strong id="modalDateTitle" style="font-size:15px;color:#0f172a;">상세 출퇴근 수정</strong>
+      <button class="pill-btn p-sub" onclick="closeEditModal()">✕ 닫기</button>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>근무 구분</label>
+        <select id="mShift">
+          <option value="">미입력</option>
+          <option value="주간 8h">주간 8h</option>
+          <option value="오후 8h">오후 8h</option>
+          <option value="야간 8h">야간 8h</option>
+          <option value="주간특근 8h">주간특근 8h</option>
+          <option value="야간특근 8h">야간특근 8h</option>
+          <option value="연차/대휴">연차/대휴</option>
+          <option value="휴무">휴무</option>
+          <option value="실근무">실근무</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>상품권 (원)</label>
+        <input type="number" step="50000" id="mVoucher">
+      </div>
+      <div class="modal-field">
+        <label>출근 시각 (예: 07:00)</label>
+        <input type="text" id="mStart">
+      </div>
+      <div class="modal-field">
+        <label>퇴근 시각 (예: 15:30)</label>
+        <input type="text" id="mEnd">
+      </div>
+      <div class="modal-field">
+        <label>조출 시간</label>
+        <input type="number" step="0.5" min="0" id="mEarly">
+      </div>
+      <div class="modal-field">
+        <label>잔업 시간</label>
+        <input type="number" step="0.5" min="0" id="mOvertime">
+      </div>
+      <div class="modal-field">
+        <label>야간 시간</label>
+        <input type="number" step="0.5" min="0" id="mNight">
+      </div>
+      <div class="modal-field">
+        <label>휴일·특근 시간</label>
+        <input type="number" step="0.5" min="0" id="mHoliday">
+      </div>
+      <div class="modal-field">
+        <label>특별근로 시간</label>
+        <input type="number" step="0.5" min="0" id="mSpecial">
+      </div>
+      <div class="modal-field">
+        <label>비고</label>
+        <input type="text" id="mNote">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px;">
+      <button class="pill-btn p-rose" onclick="deleteModalDay()">🗑 삭제</button>
+      <button class="pill-btn p-green" onclick="saveModalDay()">✅ 수정 저장</button>
+    </div>
+  </div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab-btn" onclick="switchTab('home', this)"><span class="tab-icon">⏱</span>홈·입력</button>
+  <button class="tab-btn" onclick="switchTab('table', this)"><span class="tab-icon">📋</span>근태표</button>
+  <button class="tab-btn" onclick="switchTab('payslip', this)"><span class="tab-icon">🧾</span>급여명세서</button>
+  <button class="tab-btn active" onclick="switchTab('settings', this)"><span class="tab-icon">⚙️</span>공유·설정</button>
+</nav>
+
+<div id="toast" class="toast" style="display: none;">급여명세서.html 파일 저장됨</div>
+
+<script>
+const DEFAULT_CFG = {
+  basePay: 2825010,
+  posPay: 100000,
+  hourly: 13517,
+  fixedIns: 525000,
+  estTax: 320000
+};
+
+let cfg = JSON.parse(localStorage.getItem('payroll_cfg_v1')) || {...DEFAULT_CFG};
+let records = JSON.parse(localStorage.getItem('payroll_rec_v1')) || {};
+const CYCLES = [
+  { id: '2026-10', title: '2026년 11월 급여분', start: '2026-10-18', end: '2026-11-17' },
+  { id: '2026-11', title: '2026년 12월 급여분', start: '2026-11-18', end: '2026-12-17' },
+  { id: '2026-12', title: '2027년 1월 급여분', start: '2026-12-18', end: '2027-01-17' },
+  { id: '2027-01', title: '2027년 2월 급여분', start: '2027-01-18', end: '2027-02-17' }
+];
+let currentCycleIdx = 1;
+let cycleDates = [];
+let selectedDate = '';
+let modalDate = '';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._to);
+  t._to = setTimeout(() => { t.style.display = 'none'; }, 2000);
+}
+
+function updateLiveClock() {
+  const now = new Date();
+  const days = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1;
+  const d = now.getDate();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('todayLiveDate').textContent = `${y}년 ${m}월 ${d}일 (${days[now.getDay()]})`;
+  document.getElementById('liveClockDisplay').textContent = `${hh}:${mm}:${ss}`;
+
+  const inTs = localStorage.getItem('payroll_clockin');
+  const stEl = document.getElementById('clockStatus');
+  if (inTs) {
+    const inDate = new Date(Number(inTs));
+    const ih = String(inDate.getHours()).padStart(2, '0');
+    const im = String(inDate.getMinutes()).padStart(2, '0');
+    stEl.textContent = `● 출근중 (${ih}:${im} 출근)`;
+    stEl.style.color = '#e11d48';
+  } else {
+    stEl.textContent = '● 실시간 출퇴근 대기중';
+    stEl.style.color = '#059669';
+  }
+}
+
+function stepCycle(delta) {
+  currentCycleIdx = Math.max(0, Math.min(CYCLES.length - 1, currentCycleIdx + delta));
+  selectedDate = '';
+  buildDates();
+}
+
+function buildDates() {
+  const c = CYCLES[currentCycleIdx];
+  const list = [];
+  let cur = new Date(c.start + 'T00:00:00');
+  const end = new Date(c.end + 'T00:00:00');
+  const days = ['일','월','화','수','목','금','토'];
+  while (cur <= end) {
+    const y = cur.getFullYear();
+    const m = String(cur.getMonth()+1).padStart(2,'0');
+    const d = String(cur.getDate()).padStart(2,'0');
+    list.push({ date: `${y}-${m}-${d}`, dow: days[cur.getDay()], dayIdx: cur.getDay() });
+    cur.setDate(cur.getDate() + 1);
+  }
+  cycleDates = list;
+  document.getElementById('cycleTitle').textContent = c.title;
+  document.getElementById('cycleRange').textContent = `${c.start.replace(/-/g,'/')} ~ ${c.end.replace(/-/g,'/')} (${list.length}일)`;
+
+  const dd = document.getElementById('dateDropdown');
+  dd.innerHTML = list.map(x => `<option value="${x.date}">📅 ${x.date.slice(5)} (${x.dow})</option>`).join('');
+
+  if (!selectedDate || !list.some(x => x.date === selectedDate)) {
+    selectedDate = list[0].date;
+  }
+  renderAll();
+}
+
+function getRec(dateStr) {
+  return records[dateStr] || {
+    shift: '', baseStart: '-', baseEnd: '-', start: '-', end: '-',
+    baseH: 0, early: 0, overtime: 0, night: 0, holiday: 0, special: 0, voucher: 0, note: ''
+  };
+}
+
+function saveRec(dateStr, rec) {
+  records[dateStr] = rec;
+  localStorage.setItem('payroll_rec_v1', JSON.stringify(records));
+}
+
+function shiftMinutes(hhmm, deltaMin) {
+  if (!hhmm || hhmm === '-') return '-';
+  const [h, m] = hhmm.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return hhmm;
+  let total = (h * 60 + m + deltaMin) % 1440;
+  if (total < 0) total += 1440;
+  return `${String(Math.floor(total / 60)).padStart(2,'0')}:${String(total % 60).padStart(2,'0')}`;
+}
+
+function recalcTimes(rec) {
+  if (!rec.baseStart || rec.baseStart === '-') {
+    rec.start = '-'; rec.end = '-'; return;
+  }
+  rec.start = shiftMinutes(rec.baseStart, -Math.round((rec.early || 0) * 60));
+  rec.end = shiftMinutes(rec.baseEnd, Math.round((rec.overtime || 0) * 60));
+}
+
+function applyShift(shiftName, sTime, eTime, baseH, nightH, holH) {
+  const rec = getRec(selectedDate);
+  rec.shift = shiftName;
+  rec.baseStart = sTime;
+  rec.baseEnd = eTime;
+  rec.baseH = baseH;
+  rec.night = nightH;
+  rec.holiday = holH;
+  recalcTimes(rec);
+  saveRec(selectedDate, rec);
+  showToast(`${selectedDate.slice(5)} → ${shiftName} 입력`);
+  moveDate(1);
+}
+
+function clearDay() {
+  delete records[selectedDate];
+  localStorage.setItem('payroll_rec_v1', JSON.stringify(records));
+  showToast(`${selectedDate.slice(5)} 비우기 완료`);
+  renderAll();
+}
+
+function adjustField(field, delta) {
+  const rec = getRec(selectedDate);
+  if (!rec.shift && delta > 0) {
+    rec.shift = '주간 8h';
+    rec.baseStart = '07:00';
+    rec.baseEnd = '15:30';
+    rec.baseH = 8;
+  }
+  rec[field] = Math.max(0, Math.round(((rec[field] || 0) + delta) * 10) / 10);
+  recalcTimes(rec);
+  saveRec(selectedDate, rec);
+  renderAll();
+}
+
+function adjustVoucher(delta) {
+  const rec = getRec(selectedDate);
+  rec.voucher = Math.max(0, (rec.voucher || 0) + delta);
+  saveRec(selectedDate, rec);
+  renderAll();
+}
+
+function moveDate(step) {
+  const idx = cycleDates.findIndex(x => x.date === selectedDate);
+  if (idx >= 0 && idx + step >= 0 && idx + step < cycleDates.length) {
+    selectedDate = cycleDates[idx + step].date;
+  }
+  renderAll();
+}
+
+function selectDate(d) {
+  selectedDate = d;
+  renderAll();
+}
+
+function calcSpecialPay(hours) {
+  if (!hours || hours <= 0) return 0;
+  const unit = Math.floor(cfg.hourly * 1.5);
+  return Math.ceil((unit * hours) / 10000) * 10000;
+}
+
+function calcDayExtraPay(r) {
+  const ext = Math.round(((r.early || 0) + (r.overtime || 0)) * cfg.hourly * 1.5);
+  const ngt = Math.round((r.night || 0) * cfg.hourly * 0.5);
+  const hol = Math.round((r.holiday || 0) * cfg.hourly * 1.5);
+  const spc = calcSpecialPay(r.special || 0);
+  return ext + ngt + hol + spc;
+}
+
+function calcTotals() {
+  let baseH = 0, earlyH = 0, overH = 0, nightH = 0, holH = 0, specH = 0, specPay = 0, voucherTotal = 0, workDays = 0;
+  cycleDates.forEach(d => {
+    const r = records[d.date];
+    if (!r) return;
+    if (r.shift && r.shift !== '휴무') workDays++;
+    baseH += r.baseH || (r.shift && !r.shift.includes('특근') && r.shift !== '휴무' ? 8 : 0);
+    earlyH += r.early || 0;
+    overH += r.overtime || 0;
+    nightH += r.night || 0;
+    holH += r.holiday || 0;
+    specH += r.special || 0;
+    specPay += calcSpecialPay(r.special || 0);
+    voucherTotal += r.voucher || 0;
+  });
+  const extPay = Math.round((earlyH + overH) * cfg.hourly * 1.5);
+  const nightPay = Math.round(nightH * cfg.hourly * 0.5);
+  const holPay = Math.round(holH * cfg.hourly * 1.5);
+  const fixedSum = cfg.basePay + cfg.posPay;
+  const grossPay = fixedSum + extPay + nightPay + holPay + specPay + voucherTotal;
+  const totalDeduct = cfg.fixedIns + cfg.estTax + voucherTotal;
+  const netCash = grossPay - totalDeduct;
+  return { baseH, earlyH, overH, nightH, holH, specH, extPay, nightPay, holPay, specPay, fixedSum, voucherTotal, grossPay, totalDeduct, netCash, workDays };
+}
+
+function fmt(n) {
+  return Math.round(n).toLocaleString('ko-KR') + '원';
+}
+
+function renderAll() {
+  const t = calcTotals();
+  document.getElementById('topNetCash').textContent = fmt(t.netCash);
+  document.getElementById('topVoucher').textContent = fmt(t.voucherTotal);
+  document.getElementById('topVoucherCount').textContent = `직접 추가 합계 (${Math.round(t.voucherTotal/50000)}매)`;
+  document.getElementById('topGrossPay').textContent = fmt(t.grossPay);
+
+  document.getElementById('dateDropdown').value = selectedDate;
+  const rec = getRec(selectedDate);
+  const nightAmt = Math.round((rec.night || 0) * cfg.hourly * 0.5);
+  document.getElementById('selectedNightInfo').textContent = `${rec.night || 0}h (${fmt(nightAmt)})`;
+  document.getElementById('selectedShiftBadge').textContent = rec.shift || '미입력';
+
+  document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-dark', 'active-rose'));
+  if (rec.shift) {
+    const activeBtn = document.getElementById('btn-shift-' + rec.shift);
+    if (activeBtn) {
+      activeBtn.classList.add(rec.shift.includes('특근') ? 'active-rose' : 'active-dark');
+    }
+  }
+
+  document.getElementById('val-early').textContent = `${rec.early || 0}h`;
+  document.getElementById('val-overtime').textContent = `${rec.overtime || 0}h`;
+  document.getElementById('val-night').textContent = `${rec.night || 0}h (${fmt(nightAmt)})`;
+  document.getElementById('val-holiday').textContent = `${rec.holiday || 0}h`;
+  document.getElementById('val-special').textContent = `${rec.special || 0}h (${fmt(calcSpecialPay(rec.special))})`;
+  document.getElementById('val-voucher').textContent = `${fmt(rec.voucher || 0)} (일 50,000원)`;
+
+  document.getElementById('fixedPayLabel').textContent = `고정급 ${fmt(t.fixedSum)}`;
+  document.getElementById('st-ext-h').textContent = `${t.earlyH + t.overH}h (조${t.earlyH}+잔${t.overH})`;
+  document.getElementById('st-ext-p').textContent = fmt(t.extPay);
+  document.getElementById('st-ngt-h').textContent = `${t.nightH}h`;
+  document.getElementById('st-ngt-p').textContent = fmt(t.nightPay);
+  document.getElementById('st-hol-h').textContent = `${t.holH}h`;
+  document.getElementById('st-hol-p').textContent = fmt(t.holPay);
+  document.getElementById('st-spc-h').textContent = `${t.specH}h`;
+  document.getElementById('st-spc-p').textContent = fmt(t.specPay);
+  document.getElementById('st-base-h').textContent = `정상 ${t.baseH}h`;
+  document.getElementById('st-base-p').textContent = fmt(t.fixedSum);
+  document.getElementById('st-vch-c').textContent = `${Math.round(t.voucherTotal/50000)}장`;
+  document.getElementById('st-vch-p').textContent = fmt(t.voucherTotal);
+
+  const listEl = document.getElementById('dayList');
+  listEl.innerHTML = cycleDates.map(d => {
+    const r = getRec(d.date);
+    const isSel = d.date === selectedDate;
+    const totalDayH = (r.baseH || 0) + (r.early || 0) + (r.overtime || 0) + (r.holiday || 0) + (r.special || 0);
+    const timeStr = (r.start && r.start !== '-') ? `${r.start}~${r.end}` : '';
+    let tags = '';
+    if (r.baseH) tags += `<span class="mini-tag">정상 ${r.baseH}h</span>`;
+    if (r.early) tags += `<span class="mini-tag b">조출 +${r.early}h</span>`;
+    if (r.overtime) tags += `<span class="mini-tag b">잔업 +${r.overtime}h</span>`;
+    if (r.night) tags += `<span class="mini-tag b">야간 ${r.night}h (${fmt(r.night*cfg.hourly*0.5)})</span>`;
+    if (r.holiday) tags += `<span class="mini-tag g">특근 ${r.holiday}h</span>`;
+    if (r.special) tags += `<span class="mini-tag g">특별 ${r.special}h</span>`;
+    if (r.voucher) tags += `<span class="mini-tag a">상품권 ${(r.voucher/10000)}만</span>`;
+    return `<div class="day-card-item ${isSel?'selected':''}" onclick="selectDate('${d.date}')">
+      <div class="dc-top">
+        <div>
+          <span style="color:${d.dayIdx===0?'#e11d48':d.dayIdx===6?'#2563eb':'#0f172a'}">${d.date.slice(5)}(${d.dow})</span>
+          ${r.shift ? `<span class="mini-tag b" style="margin-left:4px;">${r.shift}</span>` : ''}
+          <span style="font-size:11.5px;color:#64748b;font-weight:600;margin-left:4px;">${timeStr}</span>
+        </div>
+        <span style="font-size:12px;color:#0f172a;">${totalDayH ? totalDayH+'h' : '-'}</span>
+      </div>
+      ${tags ? `<div class="dc-tags">${tags}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('tableBody').innerHTML = cycleDates.map(d => {
+    const r = getRec(d.date);
+    const rowCls = d.dayIdx === 0 ? 'sun' : (d.dayIdx === 6 ? 'sat' : '');
+    const bHrs = r.shift ? (r.baseH !== undefined ? r.baseH : (!r.shift.includes('특근') && r.shift !== '휴무' ? 8 : 0)) : 0;
+    const holSpec = [r.holiday ? `특${r.holiday}` : '', r.special ? `별${r.special}` : ''].filter(Boolean).join('/');
+    const dayPay = calcDayExtraPay(r);
+    return `<tr class="${rowCls}" onclick="openEditModal('${d.date}')">
+      <td>${d.date.slice(5)}(${d.dow})</td>
+      <td>${r.shift || '-'}</td>
+      <td>${r.start || '-'}</td>
+      <td>${r.end || '-'}</td>
+      <td>${bHrs ? bHrs+'h' : '-'}</td>
+      <td>${r.early ? r.early+'h' : '-'}</td>
+      <td>${r.overtime ? r.overtime+'h' : '-'}</td>
+      <td>${r.night ? r.night+'h' : '-'}</td>
+      <td>${holSpec || '-'}</td>
+      <td style="text-align:right;font-weight:700;color:#2563eb;">${dayPay ? dayPay.toLocaleString() : '-'}</td>
+      <td style="color:#d97706;font-weight:700;">${r.voucher ? (r.voucher/10000)+'만' : '-'}</td>
+      <td style="color:#64748b;font-size:10px;">${r.note || ''}</td>
+    </tr>`;
+  }).join('');
+
+  const totalExtra = t.extPay + t.nightPay + t.holPay + t.specPay;
+  document.getElementById('tableFoot').innerHTML = `
+    <tr>
+      <td colspan="2">합계 (${t.workDays}일)</td>
+      <td colspan="2">-</td>
+      <td>${t.baseH}h</td>
+      <td>${t.earlyH}h</td>
+      <td>${t.overH}h</td>
+      <td>${t.nightH}h</td>
+      <td>특${t.holH}/별${t.specH}</td>
+      <td style="text-align:right;">${totalExtra.toLocaleString()}원</td>
+      <td>${(t.voucherTotal/10000)}만</td>
+      <td>-</td>
+    </tr>
+  `;
+
+  document.getElementById('payslipDetail').innerHTML = `
+    <div class="pay-row"><span>기본급 + 정기상여</span><strong>${fmt(cfg.basePay)}</strong></div>
+    <div class="pay-row"><span>직책수당</span><strong>${fmt(cfg.posPay)}</strong></div>
+    <div class="pay-row"><span>조출·잔업수당 (${t.earlyH + t.overH}h)</span><strong>${fmt(t.extPay)}</strong></div>
+    <div class="pay-row"><span>야간근로수당 (${t.nightH}h)</span><strong>${fmt(t.nightPay)}</strong></div>
+    <div class="pay-row"><span>휴일·특근수당 (${t.holH}h)</span><strong>${fmt(t.holPay)}</strong></div>
+    <div class="pay-row"><span>특별근로수당 (${t.specH}h · 만원올림)</span><strong>${fmt(t.specPay)}</strong></div>
+    <div class="pay-row"><span>상품권 지급액 (과세포함)</span><strong>${fmt(t.voucherTotal)}</strong></div>
+    <div class="pay-row" style="background:#f8fafc;padding:8px;border-radius:6px;"><span>세전 지급 총액</span><strong>${fmt(t.grossPay)}</strong></div>
+    <div class="pay-row" style="color:#e11d48;"><span>(-) 4대보험 고정공제</span><strong>-${fmt(cfg.fixedIns)}</strong></div>
+    <div class="pay-row" style="color:#e11d48;"><span>(-) 소득세·지방세 (예상)</span><strong>-${fmt(cfg.estTax)}</strong></div>
+    <div class="pay-row" style="color:#d97706;"><span>(-) 상품권 공제 (별도 현장수령)</span><strong>-${fmt(t.voucherTotal)}</strong></div>
+    <div class="pay-row total"><span>실제 통장 입금액</span><span>${fmt(t.netCash)}</span></div>
+  `;
+
+  document.getElementById('cfgBase').value = cfg.basePay;
+  document.getElementById('cfgPos').value = cfg.posPay;
+  document.getElementById('cfgHourly').value = cfg.hourly;
+  document.getElementById('cfgIns').value = cfg.fixedIns;
+  document.getElementById('cfgTax').value = cfg.estTax;
+  document.getElementById('shareCodeBox').value = 'PAY1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ cfg, records }))));
+}
+
+function clockIn() {
+  const now = new Date();
+  localStorage.setItem('payroll_clockin', now.getTime());
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const rec = getRec(selectedDate);
+  if (!rec.shift) rec.shift = '실근무';
+  rec.start = `${hh}:${mm}`;
+  rec.baseStart = `${hh}:${mm}`;
+  saveRec(selectedDate, rec);
+  updateLiveClock();
+  renderAll();
+  showToast(`출근(${hh}:${mm}) 기록 완료`);
+}
+
+function clockOut() {
+  const start = Number(localStorage.getItem('payroll_clockin'));
+  if (!start) { showToast('먼저 출근 찍기를 눌러주세요.'); return; }
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const mins = Math.round((now.getTime() - start) / 60000);
+  const hours = Math.round((mins / 60) * 2) / 2;
+  localStorage.removeItem('payroll_clockin');
+  const rec = getRec(selectedDate);
+  if (!rec.shift) rec.shift = '실근무';
+  rec.end = `${hh}:${mm}`;
+  rec.baseEnd = `${hh}:${mm}`;
+  rec.baseH = Math.min(8, hours);
+  if (hours > 8) rec.overtime = Math.round(((rec.overtime || 0) + (hours - 8)) * 10) / 10;
+  saveRec(selectedDate, rec);
+  updateLiveClock();
+  renderAll();
+  showToast(`퇴근(${hh}:${mm}) 완료! 총 ${hours}시간`);
+}
+
+function openEditModal(dateStr) {
+  modalDate = dateStr;
+  selectedDate = dateStr;
+  const r = getRec(dateStr);
+  document.getElementById('modalDateTitle').textContent = `${dateStr} 상세 출퇴근 수정`;
+  document.getElementById('mShift').value = r.shift || '';
+  document.getElementById('mVoucher').value = r.voucher || 0;
+  document.getElementById('mStart').value = r.start === '-' ? '' : r.start;
+  document.getElementById('mEnd').value = r.end === '-' ? '' : r.end;
+  document.getElementById('mEarly').value = r.early || 0;
+  document.getElementById('mOvertime').value = r.overtime || 0;
+  document.getElementById('mNight').value = r.night || 0;
+  document.getElementById('mHoliday').value = r.holiday || 0;
+  document.getElementById('mSpecial').value = r.special || 0;
+  document.getElementById('mNote').value = r.note || '';
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+
+function saveModalDay() {
+  const sh = document.getElementById('mShift').value;
+  const st = document.getElementById('mStart').value.trim() || '-';
+  const en = document.getElementById('mEnd').value.trim() || '-';
+  const baseH = (sh && !sh.includes('특근') && sh !== '휴무') ? 8 : 0;
+  saveRec(modalDate, {
+    shift: sh, baseStart: st, baseEnd: en, start: st, end: en, baseH,
+    early: parseFloat(document.getElementById('mEarly').value) || 0,
+    overtime: parseFloat(document.getElementById('mOvertime').value) || 0,
+    night: parseFloat(document.getElementById('mNight').value) || 0,
+    holiday: parseFloat(document.getElementById('mHoliday').value) || 0,
+    special: parseFloat(document.getElementById('mSpecial').value) || 0,
+    voucher: parseInt(document.getElementById('mVoucher').value, 10) || 0,
+    note: document.getElementById('mNote').value.trim()
+  });
+  closeEditModal();
+  renderAll();
+  showToast(`${modalDate} 수정 저장됨`);
+}
+
+function deleteModalDay() {
+  delete records[modalDate];
+  localStorage.setItem('payroll_rec_v1', JSON.stringify(records));
+  closeEditModal();
+  renderAll();
+  showToast(`${modalDate} 삭제됨`);
+}
+
+function saveConfig() {
+  cfg.basePay = Number(document.getElementById('cfgBase').value) || 0;
+  cfg.posPay = Number(document.getElementById('cfgPos').value) || 0;
+  cfg.hourly = Number(document.getElementById('cfgHourly').value) || 13517;
+  cfg.fixedIns = Number(document.getElementById('cfgIns').value) || 0;
+  cfg.estTax = Number(document.getElementById('cfgTax').value) || 0;
+  localStorage.setItem('payroll_cfg_v1', JSON.stringify(cfg));
+  renderAll();
+  showToast('설정이 저장되었습니다.');
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function copyKakaoSummary() {
+  const t = calcTotals();
+  const txt = `[급여명세서 정산 요약]\n• 근무일수: ${t.workDays}일\n• 조출/잔업: ${t.earlyH + t.overH}h (${fmt(t.extPay)})\n• 야간수당: ${t.nightH}h (${fmt(t.nightPay)})\n• 휴일특근: ${t.holH}h (${fmt(t.holPay)})\n• 특별근로: ${t.specH}h (${fmt(t.specPay)})\n• 별도 상품권: ${fmt(t.voucherTotal)}\n▶ 실제 통장 입금액: ${fmt(t.netCash)}`;
+  navigator.clipboard.writeText(txt).then(() => showToast('카톡 요약 복사 완료'));
+}
+
+function copyShareCode() {
+  const box = document.getElementById('shareCodeBox');
+  box.select();
+  navigator.clipboard.writeText(box.value).then(() => showToast('공유 코드 복사 완료'));
+}
+
+function importShareCode() {
+  const code = prompt('전달받은 PAY1: 공유 코드를 붙여넣으세요.');
+  if (!code || !code.startsWith('PAY1:')) return;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(code.slice(5)))));
+    if (parsed.cfg) cfg = parsed.cfg;
+    if (parsed.records) records = parsed.records;
+    localStorage.setItem('payroll_cfg_v1', JSON.stringify(cfg));
+    localStorage.setItem('payroll_rec_v1', JSON.stringify(records));
+    renderAll();
+    showToast('데이터 불러오기 완료');
+  } catch (e) { showToast('올바르지 않은 코드입니다.'); }
+}
+
+function downloadSelfHTML() {
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '급여명세서.html';
+  a.click();
+  showToast('급여명세서.html 파일 저장됨');
+}
+
+function exportCSV() {
+  let csv = '\uFEFF일자(요일),근무구분,출근시각,퇴근시각,기본(h),조출(h),잔업(h),야간(h),특근(h),특별근로(h),일수당합계(원),상품권(원),비고\n';
+  cycleDates.forEach(d => {
+    const r = getRec(d.date);
+    const bHrs = r.shift ? (r.baseH !== undefined ? r.baseH : (!r.shift.includes('특근') && r.shift !== '휴무' ? 8 : 0)) : 0;
+    csv += `${d.date}(${d.dow}),${r.shift||''},${r.start||''},${r.end||''},${bHrs},${r.early||0},${r.overtime||0},${r.night||0},${r.holiday||0},${r.special||0},${calcDayExtraPay(r)},${r.voucher||0},${r.note||''}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `출퇴근표_${CYCLES[currentCycleIdx].id}.csv`;
+  a.click();
+}
+
+buildDates();
+updateLiveClock();
+setInterval(updateLiveClock, 1000);
+</script>
+
+
+</body></html>
